@@ -8,6 +8,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { TelegramClient } from '@mtcute/bun';
 import * as path from 'node:path';
+import * as fs from 'node:fs';
 import * as env from '../env.js';
 import { registerTools, handleToolCall, setupMessageListener } from '../tools/index.js';
 
@@ -69,6 +70,9 @@ export class TelegramServer {
   }
 
   async start() {
+    if (env.STORAGE_PATH === 'bot-data/session' && !fs.existsSync('bot-data')) {
+      fs.mkdirSync('bot-data', { recursive: true });
+    }
     // Initialize Telegram client
     this.telegramClient = new TelegramClient({
       apiId: env.API_ID,
