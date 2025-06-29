@@ -1,7 +1,7 @@
 {
     "name": "telegram-mcp",
     "license": "MIT",
-    "version": "0.0.1",
+    "version": "1.0.1",
     "type": "module",
     "packageManager": "bun@1.2.16",
     "scripts": {
