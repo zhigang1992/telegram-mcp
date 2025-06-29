@@ -5,6 +5,7 @@ A Model Context Protocol (MCP) server for interacting with Telegram using mtcute
 ## Features
 
 - Send text messages to chats
+- Wait for incoming messages in specific chats
 - Read messages from chats
 - Search messages
 - List and get information about dialogs (chats)
@@ -110,6 +111,12 @@ Add to your Claude Desktop config using the storage path from the initial setup:
 - `messages_getRecent` - Get recent messages from all chats
   - `limit`: Number of chats (default: 10)
   - `messagesPerChat`: Messages per chat (default: 10)
+
+#### Interactive Tools
+
+- `wait_for_reply` - Wait for the next message in a chat
+  - `chatId` (required): Chat/User ID or username to wait for a message from
+  - `timeoutSeconds`: Timeout in seconds (default: 60, max: 300)
 
 #### Dialog Tools
 

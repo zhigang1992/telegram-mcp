@@ -9,7 +9,7 @@ import {
 import { TelegramClient } from '@mtcute/bun';
 import * as path from 'node:path';
 import * as env from '../env.js';
-import { registerTools, handleToolCall } from '../tools/index.js';
+import { registerTools, handleToolCall, setupMessageListener } from '../tools/index.js';
 
 export class TelegramServer {
   private server: Server;
@@ -85,6 +85,10 @@ export class TelegramServer {
       console.error(`After authentication, use the storage path above in your MCP configuration.\n`);
       
       const user = await this.telegramClient.start();
+      
+      // Set up message listener for wait_for_reply functionality
+      setupMessageListener(this.telegramClient);
+      
       console.error(`\nConnected to Telegram as ${user.username || user.id}`);
       console.error(`Storage path: ${absoluteStoragePath}`);
       console.error(`\nReady to accept MCP requests.`);

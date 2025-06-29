@@ -6,6 +6,7 @@
       "dependencies": {
         "@modelcontextprotocol/sdk": "^1.13.2",
         "@mtcute/bun": "^0.24.3",
+        "@mtcute/dispatcher": "^0.24.3",
       },
       "devDependencies": {
         "@types/bun": "^1.2.17",
@@ -28,6 +29,8 @@
     "@mtcute/bun": ["@mtcute/bun@0.24.3", "", { "dependencies": { "@fuman/bun": "0.0.15", "@fuman/io": "0.0.15", "@fuman/net": "0.0.15", "@fuman/utils": "0.0.15", "@mtcute/core": "^0.24.3", "@mtcute/html-parser": "^0.24.0", "@mtcute/markdown-parser": "^0.24.0", "@mtcute/wasm": "^0.24.3" } }, "sha512-voNLlACw7Su8+DKCiiBRi8F1yjl3r/AulUW8KFncPMILXo2H94qNengVg9KXUYx1mTLhJIqfRM3ouuuQQna9Lg=="],
 
     "@mtcute/core": ["@mtcute/core@0.24.4", "", { "dependencies": { "@fuman/io": "0.0.15", "@fuman/net": "0.0.15", "@fuman/utils": "0.0.15", "@mtcute/file-id": "^0.24.3", "@mtcute/tl": "^204.0.0", "@mtcute/tl-runtime": "^0.24.3", "@types/events": "3.0.0", "long": "5.2.3" } }, "sha512-4dQ1MhY1DmEUqpOLyssgv9WljDr/itpUTVanTg6pZsraU6Z+ohH4E3V2UOQcfmWCQbecmMZL7UeLlScfw0oDXQ=="],
+
+    "@mtcute/dispatcher": ["@mtcute/dispatcher@0.24.3", "", { "dependencies": { "@fuman/utils": "0.0.15", "@mtcute/core": "^0.24.3" } }, "sha512-oDArQCklmNOadduU/YLJErx8sqEcDhWNNBgZAPcYJ0Cu6p/qnIiyLgwDJjyj2IceOKDVScjpeNUX2ztBHaTlSQ=="],
 
     "@mtcute/file-id": ["@mtcute/file-id@0.24.3", "", { "dependencies": { "@fuman/utils": "0.0.15", "@mtcute/tl-runtime": "^0.24.3", "long": "5.2.3" } }, "sha512-E00JsYonLZ2z5pzfbfmAuIz3+Fn60xliOn8SCRk6Qhht4aMWbJAkehkqhsmlWsM4C64hQvW8IHqinl9LVJyOLA=="],
 

@@ -11,7 +11,8 @@
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.13.2",
-        "@mtcute/bun": "^0.24.3"
+        "@mtcute/bun": "^0.24.3",
+        "@mtcute/dispatcher": "^0.24.3"
     },
     "devDependencies": {
         "@types/bun": "^1.2.17",
