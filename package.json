@@ -6,9 +6,11 @@
     "packageManager": "bun@1.2.16",
     "scripts": {
         "dev": "bun --watch ./src/main.ts",
-        "start": "bun ./src/main.ts"
+        "start": "bun ./src/main.ts",
+        "build": "bun build ./src/main.ts --compile --outfile telegram-mcp"
     },
     "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.13.2",
         "@mtcute/bun": "^0.24.3"
     },
     "devDependencies": {

@@ -4,7 +4,7 @@
         "module": "ESNext",
         "moduleResolution": "Bundler",
         "noEmit": true,
-        "allowImportingTsExtensions": true,
+        "allowImportingTsExtensions": false,
         "target": "es2022",
         "allowJs": true,
         "sourceMap": true,

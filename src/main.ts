@@ -1,13 +1,14 @@
-import { TelegramClient } from '@mtcute/bun'
+import { TelegramServer } from './server/telegram-server.js';
 
-import * as env from './env.ts'
+async function main() {
+  const server = new TelegramServer();
+  
+  try {
+    await server.start();
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
 
-const tg = new TelegramClient({
-    apiId: env.API_ID,
-    apiHash: env.API_HASH,
-    storage: 'bot-data/session',
-})
-
-
-const user = await tg.start()
-console.log('Logged in as', user.username)
+main().catch(console.error);

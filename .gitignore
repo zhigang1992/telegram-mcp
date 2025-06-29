@@ -1,9 +1,49 @@
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+telegram-mcp
+telegram-mcp-*
+*.exe
 dist/
-.nyc_output/
-**/.DS_Store
-.idea
-.vscode
-*.log
-*.tsbuildinfo
+build/
+
+# Session data
+bot-data/
+session*
+*.session
+
+# Environment files
 .env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Testing
+.nyc_output/
+
+# Misc
+.cache/
+*.tmp
+*.temp
+telegram-mcp
