@@ -1,5 +1,6 @@
 import type { TelegramClient, Dialog, Message } from '@mtcute/bun';
 import type { ToolInfo } from './index.js';
+import { md } from '@mtcute/markdown-parser';
 
 export const messageTools: ToolInfo[] = [
   {
@@ -283,10 +284,16 @@ async function getRecentMessages(client: TelegramClient, args: any) {
 }
 
 function formatMessage(msg: Message) {
+  const textWithEntities = msg.textWithEntities;
+  const textMarkdown = textWithEntities.entities && textWithEntities.entities.length > 0
+    ? md.unparse(textWithEntities)
+    : msg.text;
+
   return {
     id: msg.id,
     date: msg.date,
     text: msg.text,
+    textMarkdown: textMarkdown,
     senderId: msg.sender.id,
     senderName: msg.sender.displayName || msg.sender.username || `User ${msg.sender.id}`,
     senderUsername: msg.sender.username,
