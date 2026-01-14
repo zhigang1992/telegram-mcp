@@ -25,7 +25,8 @@
     "scripts": {
         "dev": "bun --watch ./src/main.ts",
         "start": "bun ./src/main.ts",
-        "build": "bun build ./src/main.ts --compile --outfile telegram-mcp"
+        "build": "bun build ./src/main.ts --compile --outfile telegram-mcp",
+        "inspector": "@modelcontextprotocol/inspector"
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.13.2",

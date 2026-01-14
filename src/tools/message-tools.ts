@@ -27,7 +27,7 @@ export const messageTools: ToolInfo[] = [
   },
   {
     name: 'messages_getHistory',
-    description: 'Get message history from a chat',
+    description: 'Get message history from a chat, including media attachments (photos, videos, documents, etc.)',
     inputSchema: {
       type: 'object',
       properties: {
@@ -43,6 +43,11 @@ export const messageTools: ToolInfo[] = [
         offsetId: {
           type: 'number',
           description: 'Message ID to start from (for pagination)',
+        },
+        includeMedia: {
+          type: 'boolean',
+          description: 'Download media and save to temp files. Returns file paths that can be uploaded via uploadfile-mcp. Supports photos, videos, documents, audio, and voice messages. Default: false',
+          default: false,
         },
       },
       required: ['chatId'],
@@ -148,25 +153,82 @@ async function sendTextMessage(client: TelegramClient, args: any) {
 }
 
 async function getMessageHistory(client: TelegramClient, args: any) {
-  const { chatId, limit = 100, offsetId } = args;
-  
+  const { chatId, limit = 100, offsetId, includeMedia = false } = args;
+
   try {
     const messages = await client.getHistory(Number.isNaN(Number(chatId)) ? chatId : Number(chatId), {
       limit: Math.min(limit, 100),
       offset: offsetId ? { id: offsetId, date: 0 } : undefined,
     });
 
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify({
-            messages: messages.map(formatMessage),
-            count: messages.length,
-          }, null, 2),
-        },
-      ],
-    };
+    const content: any[] = [];
+
+    // Add text summary
+    content.push({
+      type: 'text',
+      text: JSON.stringify({
+        messages: messages.map(formatMessage),
+        count: messages.length,
+      }, null, 2),
+    });
+
+    // Download media to temp files
+    if (includeMedia) {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const os = await import('os');
+
+      const supportedMediaTypes = ['photo', 'video', 'document', 'voice', 'audio'];
+
+      for (const msg of messages) {
+        if (msg.media && supportedMediaTypes.includes(msg.media.type)) {
+          try {
+            // Download media
+            const buffer = await client.downloadAsBuffer(msg.media);
+
+            // Save to temp file
+            const tempDir = os.tmpdir();
+            const ext = getFileExtension(msg.media);
+            const fileName = `tg-${msg.chat.id}-${msg.id}.${ext}`;
+            const filePath = path.join(tempDir, fileName);
+
+            await fs.writeFile(filePath, buffer);
+
+            // Build result object
+            const result: any = {
+              messageId: msg.id,
+              chatId: msg.chat.id,
+              mediaType: msg.media.type,
+              localPath: filePath,
+              fileSize: formatFileSize(buffer.length),
+            };
+
+            // Add optional metadata
+            if (msg.media.fileName) {
+              result.originalFileName = msg.media.fileName;
+            }
+            if (msg.media.duration) {
+              result.duration = msg.media.duration;
+            }
+            if (msg.media.width && msg.media.height) {
+              result.dimensions = `${msg.media.width}x${msg.media.height}`;
+            }
+            if (msg.media.mimeType) {
+              result.mimeType = msg.media.mimeType;
+            }
+
+            content.push({
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            });
+          } catch (err: any) {
+            console.error(`Failed to download ${msg.media.type} from message ${msg.id}:`, err.message);
+          }
+        }
+      }
+    }
+
+    return { content };
   } catch (error: any) {
     return {
       content: [
@@ -283,6 +345,126 @@ async function getRecentMessages(client: TelegramClient, args: any) {
   }
 }
 
+function formatMedia(media: any) {
+  if (!media) return null;
+
+  const baseInfo: any = {
+    type: media.type,
+  };
+
+  // Handle different media types
+  switch (media.type) {
+    case 'photo':
+      return {
+        ...baseInfo,
+        id: media.id?.toString(),
+        width: media.width,
+        height: media.height,
+        fileId: media.fileId,
+        hasSpoiler: media.hasSpoiler,
+      };
+
+    case 'video':
+      return {
+        ...baseInfo,
+        id: media.id?.toString(),
+        duration: media.duration,
+        width: media.width,
+        height: media.height,
+        fileName: media.fileName,
+        mimeType: media.mimeType,
+        fileSize: media.fileSize,
+        fileId: media.fileId,
+        hasSpoiler: media.hasSpoiler,
+      };
+
+    case 'document':
+      return {
+        ...baseInfo,
+        id: media.id?.toString(),
+        fileName: media.fileName,
+        mimeType: media.mimeType,
+        fileSize: media.fileSize,
+        fileId: media.fileId,
+      };
+
+    case 'audio':
+      return {
+        ...baseInfo,
+        id: media.id?.toString(),
+        duration: media.duration,
+        title: media.title,
+        performer: media.performer,
+        fileName: media.fileName,
+        mimeType: media.mimeType,
+        fileSize: media.fileSize,
+        fileId: media.fileId,
+      };
+
+    case 'voice':
+      return {
+        ...baseInfo,
+        id: media.id?.toString(),
+        duration: media.duration,
+        mimeType: media.mimeType,
+        fileSize: media.fileSize,
+        fileId: media.fileId,
+      };
+
+    case 'sticker':
+      return {
+        ...baseInfo,
+        id: media.id?.toString(),
+        emoji: media.emoji,
+        isAnimated: media.isAnimated,
+        isVideo: media.isVideo,
+        width: media.width,
+        height: media.height,
+        fileId: media.fileId,
+      };
+
+    case 'location':
+    case 'live_location':
+      return {
+        ...baseInfo,
+        latitude: media.latitude,
+        longitude: media.longitude,
+      };
+
+    case 'contact':
+      return {
+        ...baseInfo,
+        phoneNumber: media.phoneNumber,
+        firstName: media.firstName,
+        lastName: media.lastName,
+        userId: media.userId,
+      };
+
+    case 'poll':
+      return {
+        ...baseInfo,
+        id: media.id?.toString(),
+        question: media.question,
+        closed: media.closed,
+        totalVoters: media.totalVoters,
+      };
+
+    case 'web_page':
+      return {
+        ...baseInfo,
+        url: media.url,
+        displayUrl: media.displayUrl,
+        siteName: media.siteName,
+        title: media.title,
+        description: media.description,
+      };
+
+    default:
+      // For unknown media types, try to extract basic info
+      return baseInfo;
+  }
+}
+
 function formatMessage(msg: Message) {
   const textWithEntities = msg.textWithEntities;
   const textMarkdown = textWithEntities.entities && textWithEntities.entities.length > 0
@@ -300,5 +482,28 @@ function formatMessage(msg: Message) {
     isOutgoing: msg.isOutgoing,
     chatId: msg.chat.id,
     chatName: msg.chat.displayName || msg.chat.username || `Chat ${msg.chat.id}`,
+    media: formatMedia(msg.media),
   };
+}
+
+function getFileExtension(media: any): string {
+  const typeMap: Record<string, string> = {
+    photo: 'jpg',
+    video: 'mp4',
+    voice: 'ogg',
+    audio: 'mp3',
+  };
+
+  if (media.type === 'document' && media.fileName) {
+    const ext = media.fileName.split('.').pop();
+    return ext || 'bin';
+  }
+
+  return typeMap[media.type] || 'bin';
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
