@@ -72,6 +72,10 @@ export const messageTools: ToolInfo[] = [
           description: 'Number of messages to retrieve (default: 50)',
           default: 50,
         },
+        offsetId: {
+          type: 'number',
+          description: 'Message ID to start from (for pagination). Only messages earlier than this ID will be returned.',
+        },
       },
       required: ['query'],
     },
@@ -249,7 +253,7 @@ async function getMessageHistory(client: TelegramClient, args: any) {
 }
 
 async function searchMessages(client: TelegramClient, args: any) {
-  const { chatId, query, limit = 50 } = args;
+  const { chatId, query, limit = 50, offsetId } = args;
   
   try {
     const results: Message[] = [];
@@ -260,6 +264,7 @@ async function searchMessages(client: TelegramClient, args: any) {
         chatId: Number.isNaN(Number(chatId)) ? chatId : Number(chatId),
         query,
         limit,
+        offset: offsetId,
       });
       results.push(...messages);
     } else {
