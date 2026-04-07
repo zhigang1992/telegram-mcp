@@ -1,7 +1,7 @@
 {
     "name": "@zhigang1992/telegram-mcp",
     "license": "MIT",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "type": "module",
     "description": "Telegram MCP server for interacting with Telegram via the Model Context Protocol",
     "keywords": [
