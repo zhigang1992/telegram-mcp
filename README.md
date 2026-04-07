@@ -10,6 +10,7 @@ A Model Context Protocol (MCP) server for interacting with Telegram using mtcute
 - Search messages
 - List and get information about dialogs (chats)
 - Get recent messages across all chats
+- Set and inspect emoji-status IDs for accounts and channels
 
 ## Setup
 
@@ -117,6 +118,26 @@ Add to your Claude Desktop config using the storage path from the initial setup:
 - `wait_for_reply` - Wait for the next message in a chat
   - `chatId` (required): Chat/User ID or username to wait for a message from
   - `timeoutSeconds`: Timeout in seconds (default: 60, max: 300)
+
+#### Status Tools
+
+- `status_getCurrent` - Get the current emoji status for a peer
+  - `peerId`: Target peer, defaults to `self`
+
+- `status_setEmoji` - Set or clear an emoji status
+  - `peerId`: Target peer, defaults to `self`
+  - `emojiId`: Custom emoji document ID, required unless `clear=true`
+  - `isCollectible`: Set `true` when `emojiId` is a collectible ID
+  - `until`: Optional ISO-8601 timestamp or Unix timestamp string
+  - `clear`: Clear the current status instead of setting one
+
+- `status_listAvailable` - List available default emoji-status IDs
+  - `scope`: `self` or `channel` (default: `self`)
+  - `limit`: Maximum IDs to return (default: 100)
+
+- `status_listCollectibles` - List owned collectible IDs usable as self emoji statuses
+  - `owner`: Peer to inspect, defaults to `self`
+  - `limit`: Maximum collectibles to return (default: 100)
 
 #### Dialog Tools
 

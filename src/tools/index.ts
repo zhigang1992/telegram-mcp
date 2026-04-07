@@ -3,6 +3,7 @@ import { messageTools, handleMessageTools } from './message-tools.js';
 import { dialogTools, handleDialogTools } from './dialog-tools.js';
 import { waitTools, handleWaitTools, setupMessageListener } from './wait-tools.js';
 import { callTools, handleCallTools } from './call-tools.js';
+import { statusTools, handleStatusTools } from './status-tools.js';
 
 export type ToolInfo = {
   name: string;
@@ -20,6 +21,7 @@ export function registerTools(): ToolInfo[] {
     ...dialogTools,
     ...waitTools,
     ...callTools,
+    ...statusTools,
   ];
 }
 
@@ -37,6 +39,8 @@ export async function handleToolCall(
     return handleWaitTools(name, args, client);
   } else if (name === 'call_request') {
     return handleCallTools(name, args, client);
+  } else if (name.startsWith('status_')) {
+    return handleStatusTools(name, args, client);
   }
 
   throw new Error(`Unknown tool: ${name}`);
